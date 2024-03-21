@@ -9,12 +9,15 @@ class Flower3D extends maptalks.BaseObject {
 
     instance = null;
 
-    dataPoint = new THREE.Group();
+    dataPoint = new THREE.Group();    
 
     OPTIONS_FLOWER = {
         radius: 100,
         altitude: 0};
 
+    baseMap = null;
+
+    infoWindow = null;
     
     constructor(instance, layer, map) { 
 
@@ -48,27 +51,33 @@ class Flower3D extends maptalks.BaseObject {
 
         this.layer.addMesh(this.flower);
 
+        this.baseMap = map;
+
 
     }
 
     onClick() {        
-        var options = {
-            //'autoOpenOn' : 'click',  //set to null if not to open window when clicking on map
-            'single' : false,
+        var options = {    
+            'title':' ',  
+            'autoCloseOn':true, 
+            'autoOpenOn':false,                 
+            'single' : false,            
             'width'  : 283,
-            'height' : 105,
-            'custom' : true,
+            'height' : 105,            
             'dx' : -3,
             'dy' : -12,
             'content'   : this.getInfoWindowContent()
           };
-          var infoWindow = new maptalks.ui.InfoWindow(options);
-          infoWindow.addTo(this.layer.getMap()).show(this.layer.getMap().getCoordinates);
+          this.infoWindow = new maptalks.ui.InfoWindow(options);          
+          this.baseMap.addInfoWindow(this.infoWindow, this.instance.getCoordinates());
+          
     }
+
 
     getInfoWindowContent() {
 
-        var content = '<div style=\"border:1px solid black;background-color: #2ecc71;padding:10px;border-radius:4px\">';
+        //var content = '<div style=\"border:1px solid black;background-color: #2ecc71;padding:10px;border-radius:4px\">';
+        var content = "<div>"
 
         content = content + '<b><a href=\"'+this.instance.uri+'\" target=\"_blank\">'+this.instance.getLabel()+'</a></b><br><br>';
 
@@ -81,10 +90,18 @@ class Flower3D extends maptalks.BaseObject {
           if (result.value!="label" && result.value!="uri" && result.value!="Latitud" && result.value!="Longitud")
             content = content + '<b>'+result.value + " : </b><br>" + this.instance.getDataValue(result.value) + '<br>';          
           result = iter.next();
-        }
+        }            
         
-        
+        content = content + '<hr style=\"border-top: 3px solid #bbb\">';
+
+        var p = 0;
+
+        for (p=0; p<this.instance.getNumPetals(); p++)
+            content = content + '<p style=\"color:'+this.instance.instanceOf.getPetalColor()[p]+'\"><b>'+ this.instance.instanceOf.getPetal(p)+" : </b>"+this.instance.getPetal(p)+'</p>';
+
         content = content + '</div>';
+
+        console.log(content);
 
         return content;
     }

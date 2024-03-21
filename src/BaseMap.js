@@ -30,6 +30,9 @@ class BaseMap {
     status = this.MAP_NOT_CREATED;
 
     ctxMenu = null;    
+
+    infoWindow = null;
+    
       
     constructor(){                
     }
@@ -78,6 +81,13 @@ class BaseMap {
 
     }
 
+    addInfoWindow(infoWindow, coordinates) {
+        if (this.infoWindow!=null)
+            this.infoWindow.remove();
+
+        this.infoWindow = infoWindow;
+        this.infoWindow.addTo(this.map).show(coordinates); //this.map.getCoordinates);
+    }
 
     set2DView() {
 
@@ -559,7 +569,7 @@ class BaseMap {
         if (this.flowers.length==0) { 
             var i=0;
             for (i=0; i<this.instances.length; i++)  {
-                this.flowers.push(new Flower3D(this.instances[i], this.threeLayer))
+                this.flowers.push(new Flower3D(this.instances[i], this.threeLayer, this))
                 this.addVisualObject(this.instances[i]);                
             }
         }
@@ -567,7 +577,7 @@ class BaseMap {
 
     addFlower( instance) { 
         if (this.status == this.MAP_CREATED) {
-            this.flowers.push( new Flower3D( instance, this.threeLayer )); 
+            this.flowers.push( new Flower3D( instance, this.threeLayer , this)); 
             this.addVisualObject(instance);
         }
         else 
